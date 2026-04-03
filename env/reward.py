@@ -25,11 +25,14 @@ def compute_reward(
 
     elif REWARD_MODE == "laptime":
         progress_delta = curr_progress - prev_progress
-        # Handle wrap-around at lap completion
-        if progress_delta < 0:
-            # progress_delta stays negative only if agent went backward;
-            # a lap completion gives a large positive jump — clamp negatives to 0
-            progress_delta = 0.0
+        # Handle wrap-around at lap completion (progress jumps from ~1.0 → ~0.0)
+        # A genuine lap completion: delta is large-negative (e.g. -0.98).
+        # Backward motion is small-negative (e.g. -0.002).
+        # Threshold: if delta < -0.5 it must be a lap wrap, not going backward.
+        if progress_delta < -0.5:
+            progress_delta = (1.0 - prev_progress) + curr_progress  # true forward delta
+        elif progress_delta < 0:
+            progress_delta = 0.0  # genuinely going backward — no reward
         return reward + (progress_delta * speed * SPEED_WEIGHT)
 
     return reward

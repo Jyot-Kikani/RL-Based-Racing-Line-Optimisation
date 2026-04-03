@@ -40,14 +40,14 @@ def plot_racing_line(traj_path: str):
     # Draw RL racing line as speed heatmap
     points  = np.array([df["x"].values, df["y"].values]).T.reshape(-1, 1, 2)
     segs    = np.concatenate([points[:-1], points[1:]], axis=1)
-    speeds  = df["speed"].values
+    speeds  = df["speed_kmh"].values
     norm    = plt.Normalize(speeds.min(), speeds.max())
     lc      = LineCollection(segs, cmap="RdYlGn", norm=norm, linewidth=2.5)
     lc.set_array(speeds[:-1])
     ax.add_collection(lc)
 
     cbar = fig.colorbar(lc, ax=ax, fraction=0.03, pad=0.02)
-    cbar.set_label("Speed (m/s)", color="white")
+    cbar.set_label("Speed (km/h)", color="white")
     cbar.ax.yaxis.set_tick_params(color="white")
     plt.setp(cbar.ax.yaxis.get_ticklabels(), color="white")
 
